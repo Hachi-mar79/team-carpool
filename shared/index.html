@@ -1,0 +1,367 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#124d80"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="チーム配車"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https:; form-action 'none'; base-uri 'none'"><title>チーム配車管理｜共同編集版</title><style>
+:root{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;color:#172a3a;background:#f2f6fb}*{box-sizing:border-box}html,body{margin:0;min-height:100%;height:auto;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}body{padding-bottom:env(safe-area-inset-bottom)}header{background:#124d80;color:white;padding:18px 16px 14px}h1{font-size:21px;margin:0}small{color:#607389}.sub{color:#dbeaf7;margin:5px 0 0;font-size:12px}main{max-width:920px;margin:auto;padding:14px 12px max(120px,env(safe-area-inset-bottom))}.tabs{display:flex;gap:5px;margin-bottom:15px}.tabs button{flex:1;border:0;border-radius:11px;background:#dce8f4;color:#225071;padding:12px 5px;font-weight:700}.tabs button.active{background:#124d80;color:white}.panel{display:none}.panel.active{display:block}.card{background:white;border-radius:14px;padding:15px;margin-bottom:12px;box-shadow:0 1px 7px #193c6412}h2{font-size:17px;margin:0 0 12px}h3{font-size:15px;margin:0 0 10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#526678}.field.wide{grid-column:1/-1}input,select{width:100%;padding:10px;border:1px solid #cbd7e4;border-radius:8px;background:white;font-size:16px;color:#172a3a}button{cursor:pointer}.btn{background:#156aa7;color:white;border:0;border-radius:9px;padding:11px 15px;font-weight:700;font-size:14px}.btn.secondary{background:#e7f0f7;color:#16557d}.btn.danger{background:#fce9e9;color:#a92b2b}.btn:disabled{opacity:.5}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #edf1f6}.row:first-child{border-top:0}.muted{color:#62788d;font-size:12px}.pill{background:#e9f2fa;border-radius:30px;padding:3px 9px;font-size:12px;display:inline-block}.warn{background:#fff3e7;color:#98521c;padding:10px;border-radius:9px;font-size:13px;margin:10px 0}.error{background:#ffeded;color:#a12020;padding:10px;border-radius:9px;font-size:13px;margin:10px 0}.success{background:#e7f7ef;color:#166e48;padding:10px;border-radius:9px;font-size:13px;margin:10px 0}.car{border:1px solid #d7e3ed;border-radius:11px;padding:12px;margin:10px 0}.seat{padding:7px 0;border-top:1px dashed #e2e8ee;display:flex;justify-content:space-between;gap:10px}.seat select{width:62%;font-size:14px;padding:5px}.hint{font-size:12px;color:#607389;line-height:1.6}.count{font-size:12px;background:#e4f2fc;padding:3px 8px;border-radius:20px}.hidden{display:none}.absent{opacity:.58}.attendance{border:1px solid #9bb9cc;border-radius:20px;background:#e8f4ed;color:#176644;padding:7px 10px;font-weight:700;white-space:nowrap}.attendance.off{background:#f3e8e8;color:#963b3b}.row .actions{margin-top:0;flex-wrap:nowrap}.row .btn{padding:8px 9px}.row>div:first-child{min-width:0;overflow-wrap:anywhere}.row{align-items:flex-start}.editbanner{background:#eaf3fc;padding:9px;border-radius:8px;margin-bottom:10px;font-size:13px}@media(min-width:680px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.field.wide{grid-column:span 2}}
+
+/* iPhone: use a single, natural page scroll instead of nested scrolling. */
+html, body {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}
+body { -webkit-overflow-scrolling: touch; }
+#results, #results .card, #results #carlist {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  touch-action: auto !important;
+  overscroll-behavior: auto !important;
+}
+#results #carlist { border: 1px solid #d7e3ed; border-radius: 10px; padding: 8px; background: #fff; }
+#results #carlist .car { max-width: 100%; }
+main { padding-bottom: max(160px, env(safe-area-inset-bottom)) !important; }
+
+
+.history-item{border:1px solid #d7e3ed;border-radius:10px;padding:12px;margin:10px 0}
+.history-item .actions{margin-top:8px}
+.history-details{white-space:pre-wrap;font-size:13px;line-height:1.6;background:#f5f8fc;padding:10px;border-radius:8px;margin-top:10px;overflow-wrap:anywhere}
+.history-date{font-weight:700}
+</style></head><body><header><h1>🚐 チーム配車管理</h1><p class="sub">保護者共同編集版 ｜ ログイン必須・オンライン保存</p></header><section id="login-area" class="card" style="max-width:540px;margin:22px auto;padding:20px"><h2>共同編集版にログイン</h2><p class="hint">チームに招待されたメールアドレスでログインしてください。最初の管理者はSupabaseで作成したアカウントを使用します。</p><label class="field">メールアドレス<input type="email" id="login-email" autocomplete="email"></label><label class="field" style="margin-top:10px">パスワード<input type="password" id="login-password" autocomplete="current-password"></label><div class="actions"><button class="btn" id="login-btn">ログイン</button><button class="btn secondary" id="signup-btn">新規アカウント登録</button></div><p class="hint">新規登録した方は確認メールのリンクを開いてからログインしてください。招待されていないアカウントではチームのデータは開けません。</p><div id="login-message" aria-live="polite"></div></section><div id="shared-toolbar" class="card hidden" style="max-width:920px;margin:12px auto"><div class="row"><div><b id="current-user"></b><div id="sync-state" class="muted">接続中</div></div><button class="btn secondary" id="logout-btn">ログアウト</button></div><h3>保護者を招待</h3><p class="hint">参加済みの保護者なら誰でも招待できます。招待メールは自動送信されません。登録後、共同編集版のURLをLINEなどで伝えてください。</p><div class="grid"><label class="field wide">招待するメールアドレス<input type="email" id="invite-email" placeholder="parent@example.com"></label><div class="field"><button class="btn" id="invite-btn">招待を登録</button></div></div><div id="invite-message"></div><div id="invitation-list" class="hint"></div></div><main id="app-main" class="hidden"><div class="tabs"><button class="active" data-tab="people">参加者</button><button data-tab="vehicles">車両</button><button data-tab="results">自動配車</button></div>
+<section class="panel active" id="people"><div class="card"><h2>参加者を登録 <span class="count" id="pcount">0 / 93名</span></h2><div id="editbanner" class="editbanner hidden">参加者を編集中です。変更を保存するかキャンセルしてください。</div><form id="pform" class="grid"><label class="field">氏名<input id="pname" required maxlength="50" placeholder="例：山田 太郎"></label><label class="field">区分<select id="ptype"><option>選手</option><option>保護者</option><option>弟妹</option></select></label><label class="field">学年（選手のみ）<select id="pgrade"><option value="">未選択</option><option>1年</option><option>2年</option><option>3年</option><option>4年</option><option>5年</option><option>6年</option></select></label><label class="field">家族ID<input id="pfamily" placeholder="例：Y01"></label><div class="field wide"><button class="btn" type="submit" id="psubmit">＋ 参加者を追加</button><button class="btn secondary hidden" type="button" id="pcancel" style="margin-top:6px">編集をキャンセル</button></div></form></div><div class="card"><h2>参加者一覧</h2><div id="plist"></div></div></section>
+<section class="panel" id="vehicles"><div class="card"><h2>車両を登録 <span class="count" id="vcount">0 / 20台</span></h2><form id="vform" class="grid"><label class="field">車名<input id="vname" required placeholder="例：山田号"></label><label class="field">号種<select id="vtype"><option>選手号</option><option>応援号</option></select></label><label class="field">運転者（参加者に登録済みの保護者）<select id="vdriver" required></select></label><label class="field">定員（運転者を含む）<input id="vcap" type="number" min="2" max="10" value="7" required></label><div class="field wide"><button class="btn" type="submit">＋ 車両を追加</button></div></form></div><div class="card"><h2>登録車両</h2><div id="vlist"></div></div></section>
+<section class="panel" id="results"><div class="card"><h2>自動配車</h2><p class="hint">使用台数をできるだけ少なくしたうえで、履歴上の使用回数が少ない車両を優先します。選手は選手号・弟妹は応援号・子供は後部座席に配置し、家族や同学年の同乗も優先します。定員・号種などの条件によっては使用回数の多い車両が選ばれます。</p><div class="actions"><button class="btn" id="assign">自動配車する</button><button class="btn secondary" id="again">別案を作成</button></div><div id="message"></div></div><div class="card"><h2>配車結果</h2><div id="carlist"><p class="muted">参加者と車両を登録して自動配車してください。</p></div><div class="grid" style="margin-top:14px"><label class="field">配車日<input type="date" id="eventdate"></label><label class="field">行事名（任意）<input id="eventname" maxlength="80" placeholder="例：練習試合"></label></div><div class="actions"><button class="btn" id="savehistory">配車を確定・履歴保存</button></div><div id="historymessage"></div><div class="actions"><button class="btn" id="share">配車結果を共有</button><button class="btn secondary" id="print">印刷・PDF保存</button></div><p class="hint">共有ボタンを押した場合のみ、配車結果の文章をLINEなど外部アプリに渡せます。共有先には個人情報が送られます。</p></div><div class="card"><h2>過去の配車履歴 <span class="count" id="historycount">0件</span></h2><p class="hint">保存した履歴から車両ごとの使用回数を集計します。履歴の削除で回数も減ります。</p><div id="historylist"></div></div><div id="history-editor-overlay" class="card hidden" style="border:2px solid #156aa7"><h2>配車履歴を編集</h2><p class="hint">日付・行事名・使用車両・乗車者を編集できます。座席には氏名を入力してください。保存するとチーム全体に反映されます。</p><div class="grid"><label class="field">配車日<input id="history-edit-date" type="date"></label><label class="field">行事名<input id="history-edit-name" maxlength="80"></label></div><div id="history-edit-cars"></div><div class="actions"><button class="btn secondary" type="button" id="history-add-car">＋ 車両を追加</button></div><div class="actions"><button class="btn" type="button" id="history-edit-save">変更を保存</button><button class="btn secondary" type="button" id="history-edit-cancel">キャンセル</button></div></div></section>
+<div class="card"><p class="hint"><b>共同編集版について：</b>参加者・車両・履歴はSupabaseに保存され、チームの参加済み保護者と共有されます。操作後は保存完了を確認してください。ほかの端末で更新があった場合、古い画面からの保存は拒否され、最新データを再取得します。共有先にも個人情報が渡るため、取り扱いに注意してください。</p><div class="actions"><button class="btn secondary" id="export">データをバックアップ</button><button class="btn secondary" id="importbutton" type="button">バックアップを復元</button></div><div id="backupmessage" aria-live="polite"></div></div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
+'use strict';const KEY='team-carpool-prototype-v1';let data={people:[],vehicles:[],result:[],history:[]},attempt=0,editingId=null;const $=id=>document.getElementById(id),escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),id=()=>String(Date.now())+Math.random().toString(36).slice(2);function save(){return queueSave()}function msg(s,kind='error'){$('message').innerHTML='<div class="'+kind+'">'+escapeHTML(s)+'</div>'}function invalidate(){data.result=[];$('message').innerHTML='';save();render()};document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab));render()});
+function stopEdit(){editingId=null;$('pform').reset();$('psubmit').textContent='＋ 参加者を追加';$('pcancel').classList.add('hidden');$('editbanner').classList.add('hidden')}
+$('pcancel').onclick=stopEdit;
+$('pform').onsubmit=e=>{e.preventDefault();if(!editingId&&data.people.length>=93)return alert('参加者は最大93名です');const name=$('pname').value.trim(),type=$('ptype').value,grade=$('pgrade').value,family=$('pfamily').value.trim();if(!name)return;if(data.people.some(p=>p.name===name&&p.id!==editingId))return alert('同じ氏名があります。区別できる氏名にしてください');if(editingId){let p=data.people.find(p=>p.id===editingId);if(!p)return stopEdit();p.name=name;p.type=type;p.grade=type==='選手'?grade:'';p.family=family;if(type!=='保護者')data.vehicles=data.vehicles.filter(v=>v.driver!==p.id)}else data.people.push({id:id(),name,type,grade:type==='選手'?grade:'',family,attending:true});stopEdit();invalidate()};
+$('vform').onsubmit=e=>{e.preventDefault();if(data.vehicles.length>=20)return alert('車両は最大20台です');const name=$('vname').value.trim(),type=$('vtype').value,driver=$('vdriver').value,cap=Number($('vcap').value);if(!driver||!name||cap<2||cap>10)return alert('車両情報を確認してください');if(data.vehicles.some(v=>v.name===name))return alert('車名が重複しています');if(data.vehicles.some(v=>v.driver===driver))return alert('同じ運転者を複数車両に設定できません');data.vehicles.push({id:id(),name,type,driver,cap});e.target.reset();invalidate()};
+function render(){const people=data.people,vehicles=data.vehicles;const usage=new Map();for(const h of data.history||[])for(const c of h.cars||[])usage.set(c.vehicleId,(usage.get(c.vehicleId)||0)+1);$('pcount').textContent=people.length+' / 93名（出席 '+people.filter(p=>p.attending!==false).length+'名）';$('vcount').textContent=vehicles.length+' / 20台';$('plist').innerHTML=people.length?people.map(p=>`<div class="row ${p.attending===false?'absent':''}"><div><b>${escapeHTML(p.name)}</b> <span class="pill">${escapeHTML(p.type)}</span><div class="muted">${escapeHTML([p.grade,p.family?'家族 '+p.family:''].filter(Boolean).join(' ／ '))}</div></div><div class="actions"><button class="attendance ${p.attending===false?'off':''}" data-attend="${p.id}" aria-label="出欠切り替え">${p.attending===false?'欠席':'出席'}</button><button class="btn secondary" data-edit-p="${p.id}">編集</button><button class="btn danger" data-remove-p="${p.id}">削除</button></div></div>`).join(''):'<p class="muted">まだ登録されていません。</p>';$('vdriver').innerHTML='<option value="">選択してください</option>'+people.filter(p=>p.type==='保護者').map(p=>`<option value="${p.id}">${escapeHTML(p.name)}</option>`).join('');$('vlist').innerHTML=vehicles.length?vehicles.map(v=>`<div class="row ${v.available===false?'absent':''}"><div><b>${escapeHTML(v.name)}</b> <span class="pill">${escapeHTML(v.type)}</span><div class="muted">運転者：${escapeHTML(people.find(p=>p.id===v.driver)?.name||'未登録')} ／ 定員${v.cap}名 ／ <b>使用${usage.get(v.id)||0}回</b></div></div><div class="actions"><button class="attendance ${v.available===false?'off':''}" data-available-v="${v.id}" aria-label="車両の使用可否切り替え">${v.available===false?'使用不可':'使用可能'}</button><button class="btn danger" data-remove-v="${v.id}">削除</button></div></div>`).join(''):'<p class="muted">まだ登録されていません。</p>';document.querySelectorAll('[data-available-v]').forEach(b=>b.onclick=()=>{let v=data.vehicles.find(v=>v.id===b.dataset.availableV);if(v){v.available=v.available===false;invalidate()}});document.querySelectorAll('[data-attend]').forEach(b=>b.onclick=()=>{let p=data.people.find(p=>p.id===b.dataset.attend);if(p){p.attending=p.attending===false;invalidate()}});document.querySelectorAll('[data-edit-p]').forEach(b=>b.onclick=()=>{let p=data.people.find(p=>p.id===b.dataset.editP);if(!p)return;editingId=p.id;$('pname').value=p.name;$('ptype').value=p.type;$('pgrade').value=p.grade||'';$('pfamily').value=p.family||'';$('psubmit').textContent='変更を保存';$('pcancel').classList.remove('hidden');$('editbanner').classList.remove('hidden');$('pform').scrollIntoView({behavior:'smooth',block:'start'})});document.querySelectorAll('[data-remove-p]').forEach(b=>b.onclick=()=>{if(b.dataset.confirmDelete!=='yes'){b.dataset.confirmDelete='yes';b.textContent='もう一度押すと削除';return;}if(editingId===b.dataset.removeP)stopEdit();data.people=data.people.filter(p=>p.id!==b.dataset.removeP);data.vehicles=data.vehicles.filter(v=>v.driver!==b.dataset.removeP);invalidate()});document.querySelectorAll('[data-remove-v]').forEach(b=>b.onclick=()=>{if(b.dataset.confirmDelete!=='yes'){b.dataset.confirmDelete='yes';b.textContent='もう一度押すと削除';return;}data.vehicles=data.vehicles.filter(v=>v.id!==b.dataset.removeV);invalidate()});renderResult();renderHistory()}
+function shuffled(a){return a.map(v=>({v,k:Math.random()})).sort((x,y)=>x.k-y.k).map(x=>x.v)}
+function tryPlan(chosen){let p=data.people.filter(x=>x.attending!==false),byId=new Map(p.map(x=>[x.id,x])),driverIds=new Set(chosen.map(v=>v.driver));let seats=chosen.map(v=>({vehicle:v,slots:[v.driver,...Array(v.cap-1).fill(null)]}));let remaining=p.filter(x=>!driverIds.has(x.id));let order=shuffled(remaining).sort((a,b)=>{const rank=x=>x.type==='選手'?0:x.type==='弟妹'?1:2;return rank(a)-rank(b)});for(let person of order){let opts=[];for(let car of seats){let v=car.vehicle;if(person.type==='選手'&&v.type!=='選手号')continue;if(person.type==='弟妹'&&v.type!=='応援号')continue;for(let s=1;s<v.cap;s++){if(car.slots[s]!==null)continue;if(person.type!=='保護者'&&s===1)continue;let fam=car.slots.some(pid=>byId.get(pid)?.family&&byId.get(pid)?.family===person.family&&person.family);let grade=person.type==='選手'&&car.slots.some(pid=>byId.get(pid)?.type==='選手'&&byId.get(pid)?.grade&&byId.get(pid)?.grade===person.grade);let score=(fam?120:0)+(grade?35:0)+(s===1&&person.type==='保護者'?5:0)+(v.cap-car.slots.filter(Boolean).length)*.1+Math.random()*12;opts.push({car,s,score})}}if(!opts.length)return null;opts.sort((a,b)=>b.score-a.score);opts[0].car.slots[opts[0].s]=person.id}return seats}
+function generate(){const p=data.people.filter(x=>x.attending!==false),v=data.vehicles.filter(x=>x.available!==false&&p.some(y=>y.id===x.driver&&y.type==='保護者'));if(!p.length||!v.length){msg('出席者と、使用可能かつ運転者が出席している車両を登録してください');return}if(p.length>93){msg('参加者は93名以内にしてください');return}if(v.some(x=>!p.some(y=>y.id===x.driver&&y.type==='保護者'))){msg('運転者は参加者欄に保護者として登録してください');return}let best=null;let tries=0;// 履歴で確定保存された回数だけを使用。未使用の車両は0回。
+const usage=new Map();
+for(const h of data.history||[]) for(const c of h.cars||[])
+  if(c.vehicleId) usage.set(c.vehicleId,(usage.get(c.vehicleId)||0)+1);
+// 使用回数の少ない車両から探索。同回数はランダムに並べ、別案にも対応。
+const ordered=shuffled(v).sort((a,b)=>(usage.get(a.id)||0)-(usage.get(b.id)||0));
+function feasible(selected){const ids=new Set(selected.map(x=>x.driver));if(ids.size!==selected.length)return false;let people=p.filter(x=>!ids.has(x.id));let seats=selected.reduce((a,x)=>a+x.cap-1,0);let players=people.filter(x=>x.type==='選手').length;let sibs=people.filter(x=>x.type==='弟妹').length;let playerRear=selected.filter(x=>x.type==='選手号').reduce((a,x)=>a+Math.max(0,x.cap-2),0);let sibRear=selected.filter(x=>x.type==='応援号').reduce((a,x)=>a+Math.max(0,x.cap-2),0);let childRear=selected.reduce((a,x)=>a+Math.max(0,x.cap-2),0);return seats>=people.length&&playerRear>=players&&sibRear>=sibs&&childRear>=players+sibs}
+function choose(start,sel,k){if(best||tries>20000)return;if(sel.length===k){tries++;if(!feasible(sel))return;for(let t=0;t<45;t++){let plan=tryPlan(sel);if(plan){best=plan;return}}return}for(let i=start;i<=ordered.length-(k-sel.length);i++){sel.push(ordered[i]);choose(i+1,sel,k);sel.pop();if(best||tries>20000)return}}
+for(let k=1;k<=ordered.length;k++){choose(0,[],k);if(best)break;if(tries>20000)break}if(!best){msg('条件を満たす配車案を見つけられませんでした。車両定員・選手号・応援号・運転者を確認してください。なお、この試作版は探索回数に上限があります。');return}data.result=best.map(c=>({vehicleId:c.vehicle.id,slots:c.slots}));save();renderResult();msg('配車案を作成しました。使用台数を抑え、過去の使用回数が少ない車両を優先しています。内容を確認してから共有してください。','success')}
+function renderResult(){if(!data.result.length){$('carlist').innerHTML='<p class="muted">まだ配車案はありません。</p>';return}let byId=new Map(data.people.map(p=>[p.id,p]));$('carlist').innerHTML=data.result.map((c,i)=>{let v=data.vehicles.find(v=>v.id===c.vehicleId);if(!v)return '';return `<div class="car"><h3>${escapeHTML(v.name)} <span class="pill">${escapeHTML(v.type)}</span></h3><div class="muted">${c.slots.filter(Boolean).length} / ${v.cap}名</div>${c.slots.map((pid,j)=>`<div class="seat"><span>${j===0?'運転席':j===1?'助手席':'後席'}</span><select data-car="${i}" data-seat="${j}" ${j===0?'disabled':''}><option value="">空席</option>${data.people.filter(p=>p.attending!==false).map(p=>`<option value="${p.id}" ${pid===p.id?'selected':''}>${escapeHTML(p.name)}（${escapeHTML(p.type)}）</option>`).join('')}</select></div>`).join('')}</div>`}).join('');document.querySelectorAll('[data-seat]').forEach(s=>s.onchange=()=>{let ci=+s.dataset.car,si=+s.dataset.seat,old=data.result[ci].slots[si],val=s.value;if(!val){data.result[ci].slots[si]=null;save();renderResult();return}let p=byId.get(val),v=data.vehicles.find(v=>v.id===data.result[ci].vehicleId);if((si===1&&p.type!=='保護者')||(p.type==='選手'&&v.type!=='選手号')||(p.type==='弟妹'&&v.type!=='応援号')){alert('区分・号種・助手席のルールに違反しています');renderResult();return}for(let car of data.result)for(let k=1;k<car.slots.length;k++)if(car.slots[k]===val)car.slots[k]=null;data.result[ci].slots[si]=val;save();renderResult()})}
+function shareText(){if(!data.result.length)return '';let byId=new Map(data.people.map(p=>[p.id,p]));return '【チーム配車表】\n'+data.result.map(c=>{let v=data.vehicles.find(v=>v.id===c.vehicleId);return v.name+'（'+v.type+'）\n'+c.slots.map((pid,i)=>pid?(i===0?'運転席':i===1?'助手席':'後席')+'：'+(byId.get(pid)?.name||'不明'):null).filter(Boolean).join('\n')}).join('\n\n')}
+function renderHistory(){
+  const history=Array.isArray(data.history)?data.history:[];
+  $('historycount').textContent=history.length+'件';
+  $('historylist').innerHTML=history.length?history.slice().reverse().map(h=>{
+    const cars=Array.isArray(h.cars)?h.cars:[];
+    const summary=cars.map(c=>escapeHTML(c.vehicleName||'車両名なし')).join('、');
+    return `<div class="history-item"><div class="history-date">${escapeHTML(h.date||'日付なし')}　${escapeHTML(h.name||'')}</div><div class="muted">使用${cars.length}台：${summary}</div><div class="actions"><button class="btn secondary" data-view-history="${escapeHTML(h.id)}">内容を見る</button><button class="btn secondary" data-edit-history="${escapeHTML(h.id)}">編集</button><button class="btn danger" data-delete-history="${escapeHTML(h.id)}">履歴を削除</button></div><div class="history-details hidden" id="history-detail-${escapeHTML(h.id)}"></div></div>`;
+  }).join(''):'<p class="muted">保存した配車履歴はありません。</p>';
+  document.querySelectorAll('[data-view-history]').forEach(b=>b.onclick=()=>{
+    const h=history.find(x=>x.id===b.dataset.viewHistory);if(!h)return;
+    const el=document.getElementById('history-detail-'+h.id);if(!el)return;
+    el.textContent=(h.cars||[]).map(c=>{
+      const seats=(c.seats||[]).map((p,i)=>`${i===0?'運転席':i===1?'助手席':'後席'}：${p||'空席'}`).join('\n');
+      return `${c.vehicleName}（${c.vehicleType||''}）\n${seats}`;
+    }).join('\n\n');el.classList.toggle('hidden');
+  });
+  document.querySelectorAll('[data-edit-history]').forEach(b=>b.onclick=()=>openHistoryEditor(b.dataset.editHistory));
+  document.querySelectorAll('[data-delete-history]').forEach(b=>b.onclick=()=>{
+    const h=history.find(x=>x.id===b.dataset.deleteHistory);if(!h)return;
+    if(b.dataset.confirmDelete!=='yes'){
+      b.dataset.confirmDelete='yes';
+      b.textContent='もう一度押すと削除';
+      return;
+    }
+    const updated=history.filter(x=>x.id!==h.id);
+    try {
+      data.history=updated;save();
+      data.history=updated;
+      render();
+    } catch(err) {
+      $('historymessage').innerHTML='<div class="error">履歴を削除できませんでした。</div>';
+    }
+  });
+}
+// 保存済み履歴の編集。編集中は履歴のスナップショットを保持し、保存時にまとめて反映。
+let editingHistoryId=null;
+function openHistoryEditor(historyId){
+ const h=(data.history||[]).find(x=>x.id===historyId);if(!h)return;
+ editingHistoryId=historyId;
+ const overlay=$('history-editor-overlay');
+ $('history-edit-date').value=h.date||'';
+ $('history-edit-name').value=h.name||'';
+ const area=$('history-edit-cars');area.innerHTML='';
+ for(const c of h.cars||[])addHistoryCarEditor(c);
+ overlay.classList.remove('hidden');
+ overlay.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function addHistoryCarEditor(c){
+ const area=$('history-edit-cars');const el=document.createElement('div');el.className='car history-edit-car';
+ const available=data.vehicles;
+ const options=available.map(v=>`<option value="${escapeHTML(v.id)}" ${v.id===c?.vehicleId?'selected':''}>${escapeHTML(v.name)}（${escapeHTML(v.type)}）</option>`).join('');
+ const missing=c?.vehicleId&&!available.some(v=>v.id===c.vehicleId);
+ const initial=c?.seats||[];
+ el.innerHTML=`<label class="field">使用車両<select class="history-edit-vehicle">${missing?`<option value="${escapeHTML(c.vehicleId)}" selected>${escapeHTML(c.vehicleName||'削除済みの車両')}（登録なし）</option>`:''}${options}</select></label><div class="history-edit-seats"></div><div class="actions"><button type="button" class="btn danger history-remove-car">この車両を外す</button></div>`;
+ const select=el.querySelector('.history-edit-vehicle');
+ const seats=el.querySelector('.history-edit-seats');
+ const renderSeats=(previous=[])=>{
+  const v=available.find(x=>x.id===select.value);
+  const cap=v?.cap||Math.max(2,previous.length);
+  seats.innerHTML='';
+  for(let i=0;i<cap;i++){
+   const row=document.createElement('label');row.className='field';row.style.marginTop='8px';
+   const label=document.createElement('span');label.textContent=i===0?'運転席':i===1?'助手席':'後席';
+   const inp=document.createElement('input');inp.className='history-edit-seat';inp.maxLength=50;inp.placeholder='空席';inp.value=previous[i]||'';
+   row.append(label,inp);seats.appendChild(row);
+  }
+ };
+ renderSeats(initial);
+ select.onchange=()=>renderSeats(Array.from(seats.querySelectorAll('input')).map(x=>x.value));
+ el.querySelector('.history-remove-car').onclick=()=>el.remove();
+ area.appendChild(el);
+}
+$('history-add-car').onclick=()=>{if(!data.vehicles.length)return alert('先に車両を登録してください');addHistoryCarEditor({vehicleId:data.vehicles[0].id,seats:[]})};
+$('history-edit-cancel').onclick=()=>{$('history-editor-overlay').classList.add('hidden');editingHistoryId=null};
+$('history-edit-save').onclick=()=>{
+ if(!editingHistoryId)return;
+ const original=(data.history||[]).find(x=>x.id===editingHistoryId);if(!original)return;
+ const date=$('history-edit-date').value,name=$('history-edit-name').value.trim();
+ if(!date)return alert('配車日を入力してください');
+ const cars=[];const usedVehicles=new Set();const usedPeople=new Set();
+ for(const el of document.querySelectorAll('.history-edit-car')){
+  const vehicleId=el.querySelector('.history-edit-vehicle').value;
+  if(usedVehicles.has(vehicleId))return alert('同じ車両を2回登録できません');usedVehicles.add(vehicleId);
+  const v=data.vehicles.find(x=>x.id===vehicleId);
+  if(!v)return alert('削除済みの車両は選択できません。別の車両を選んでください');
+  const seats=Array.from(el.querySelectorAll('.history-edit-seat')).map(x=>x.value.trim()||null);
+  for(let i=0;i<seats.length;i++){
+   const person=seats[i];if(!person)continue;
+   if(usedPeople.has(person))return alert('同じ名前が複数の座席にあります：'+person);
+   usedPeople.add(person);
+   const p=data.people.find(x=>x.name===person);
+   if(p&&((i===1&&p.type!=='保護者')||(p.type==='選手'&&v.type!=='選手号')||(p.type==='弟妹'&&v.type!=='応援号')))
+     return alert('座席・号種のルールに違反しています：'+person);
+  }
+  cars.push({vehicleId:v.id,vehicleName:v.name,vehicleType:v.type,driverName:seats[0]||'',seats});
+ }
+ if(!cars.length)return alert('車両を1台以上登録してください');
+ original.date=date;original.name=name;original.cars=cars;original.editedAt=new Date().toISOString();
+ $('history-editor-overlay').classList.add('hidden');editingHistoryId=null;
+ save();render();
+ $('historymessage').innerHTML='<div class="warn">履歴の変更をクラウドに保存中です。保存完了の表示をご確認ください。</div>';
+};
+
+$('eventdate').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+$('savehistory').onclick=()=>{
+  if(!data.result.length)return alert('先に自動配車を実行してください');
+  const date=$('eventdate').value,name=$('eventname').value.trim();
+  if(!date)return alert('配車日を入力してください');
+  const byId=new Map(data.people.map(p=>[p.id,p]));
+  const cars=data.result.map(c=>{
+    const v=data.vehicles.find(v=>v.id===c.vehicleId);if(!v)return null;
+    return {vehicleId:v.id,vehicleName:v.name,vehicleType:v.type,driverName:byId.get(v.driver)?.name||'',seats:c.slots.map(pid=>pid?(byId.get(pid)?.name||'不明'):null)};
+  }).filter(Boolean);
+  if(!cars.length)return alert('保存できる配車結果がありません');
+  // WKWebView may not display native JavaScript confirm dialogs without a UIDelegate.
+  // The explicit save button is the confirmation action.
+  const historyMessage=$('historymessage');
+  try {
+    data.history=Array.isArray(data.history)?data.history:[];
+    const record={id:id(),date,name,cars,createdAt:new Date().toISOString()};
+    const nextHistory=[...data.history,record];
+    // Persist first, then update the UI so a storage failure is not shown as success.
+    data.history=nextHistory;save();
+    data.history=nextHistory;
+    render();
+    historyMessage.innerHTML='<div class="warn">配車履歴を保存中です。上部の保存状態を確認してください。</div>';
+    $('historylist').scrollIntoView({behavior:'smooth',block:'nearest'});
+  } catch (err) {
+    historyMessage.innerHTML='<div class="error">履歴を保存できませんでした。端末の保存領域を確認してください。</div>';
+    console.error('History save failed',err);
+  }
+};
+$('assign').onclick=generate;$('again').onclick=generate;$('share').onclick=async()=>{let t=shareText();if(!t)return alert('配車案を作成してください');try{if(navigator.share)await navigator.share({title:'チーム配車表',text:t});else if(navigator.clipboard){await navigator.clipboard.writeText(t);alert('配車結果をコピーしました。LINEに貼り付けてください')}else{prompt('以下をコピーしてLINEに貼り付けてください',t)}}catch(e){if(e.name!=='AbortError')prompt('以下をコピーしてください',t)}};$('print').onclick=()=>{if(!data.result.length)return alert('配車案を作成してください');let t=shareText();let w=window.open('','_blank');if(!w)return alert('ポップアップを許可してください');w.document.write('<html><head><meta charset="utf-8"><title>配車表</title></head><body><h2>チーム配車表</h2><pre style="font:16px/1.7 sans-serif;white-space:pre-wrap">'+escapeHTML(t)+'</pre></body></html>');w.document.close();w.focus();w.print()};function backupNotice(text,kind='success') {
+  $('backupmessage').innerHTML='<div class="'+kind+'">'+escapeHTML(text)+'</div>';
+}
+// ブラウザ版は端末上でJSONを書き出し、Swift版では従来のネイティブ共有を使用。
+$('export').onclick=()=>{
+  try {
+    const payload=JSON.stringify({people:data.people,vehicles:data.vehicles,result:[],history:Array.isArray(data.history)?data.history:[]},null,2);
+    const bridge=window.webkit?.messageHandlers?.carpoolBackup;
+    if(bridge){bridge.postMessage({action:'export',json:payload});backupNotice('保存先を選ぶ画面を開きます。');return;}
+    const blob=new Blob([payload],{type:'application/json;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');link.href=url;link.download='carpool-backup.json';document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    backupNotice('バックアップの保存を開始しました。ファイルアプリなどで保存先を確認してください。');
+  }catch(e){backupNotice('バックアップの作成に失敗しました。','error');}
+};
+const backupFileInput=document.createElement('input');
+backupFileInput.type='file';backupFileInput.accept='.json,application/json';backupFileInput.style.display='none';
+document.body.appendChild(backupFileInput);
+$('importbutton').onclick=()=>{
+  const bridge=window.webkit?.messageHandlers?.carpoolBackup;
+  if(bridge){bridge.postMessage({action:'import'});return;}
+  backupFileInput.value='';backupFileInput.click();
+};
+backupFileInput.onchange=async()=>{
+  const file=backupFileInput.files?.[0];if(!file)return;
+  try {
+    if(file.size>10000000)throw Error('ファイルが大きすぎます');
+    const restored=JSON.parse(await file.text());
+    if(!restored||!Array.isArray(restored.people)||!Array.isArray(restored.vehicles)||
+       restored.people.length>93||restored.vehicles.length>20||
+       (restored.history!==undefined&&!Array.isArray(restored.history)))throw Error('バックアップ形式が正しくありません');
+    if(!window.confirm('現在の登録データを上書きして復元しますか？'))return;
+    const next={people:restored.people,vehicles:restored.vehicles,result:[],history:restored.history||[]};
+    data=next;save();stopEdit();render();
+    backupNotice('復元データを保存中です。上部の保存状態を確認してください。','warn');
+  }catch(e){backupNotice('復元できませんでした：'+e.message,'error');}
+};
+// 旧Swift版との互換性。共同編集版ではWebブラウザを使用。
+window.restoreCarpoolBackupFromNative=(encoded)=>{
+  try {
+    const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
+    const decoded=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+    const restored=JSON.parse(decoded);
+    if(!restored || !Array.isArray(restored.people) || !Array.isArray(restored.vehicles) ||
+       restored.people.length>93 || restored.vehicles.length>20 ||
+       (restored.history!==undefined && !Array.isArray(restored.history))) throw Error('invalid backup');
+    const next={people:restored.people,vehicles:restored.vehicles,result:[],history:restored.history||[]};
+    // 保存成功後に画面データを切り替える（既存の保存キーを維持）
+    data=next;save();
+    stopEdit();
+    render();
+    backupNotice('復元データを保存中です。上部の保存状態を確認してください。','warn');
+  } catch(e) {
+    const detail=(e && e.name ? e.name : 'Error') + (e && e.message ? ': ' + e.message : '');
+    backupNotice('復元に失敗しました。原因：' + detail,'error');
+    console.error('Backup restore error',e);
+  }
+};
+window.carpoolBackupNativeError=(message)=>backupNotice(message,'error');
+render();
+
+// ===== Supabase共同編集版 =====
+// 公開してよい値のみ設定。secret/service_roleキーは絶対に入力しない。
+const SUPABASE_URL = 'https://fcinbpvyjkffwipmrtvf.supabase.co/rest/v1/';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_hCnfbMMsy8BCtVh-qH6qKQ_djshoUDu';
+let client=null, teamId=null, remoteVersion=null, signedIn=false;
+let saveChain=Promise.resolve(), refreshBusy=false, pollTimer=null, savePending=0;
+const emptyData=()=>({people:[],vehicles:[],result:[],history:[]});
+const safeData=d=>({people:Array.isArray(d?.people)?d.people:[],vehicles:Array.isArray(d?.vehicles)?d.vehicles:[],result:Array.isArray(d?.result)?d.result:[],history:Array.isArray(d?.history)?d.history:[]});
+const notice=(id,message,kind='error')=>$(id).innerHTML='<div class="'+kind+'">'+escapeHTML(message)+'</div>';
+function syncState(s,kind=''){ $('sync-state').textContent=s; $('sync-state').style.color=kind==='error'?'#a12020':kind==='success'?'#166e48':'#62788d'; }
+function busy(flag){ $('app-main').style.pointerEvents=flag?'none':'auto'; $('app-main').style.opacity=flag?'.65':'1'; }
+async function readRemote(){
+ const {data:row,error}=await client.from('team_data').select('data,version').eq('team_id',teamId).single();
+ if(error)throw error;
+ data=safeData(row.data);remoteVersion=row.version;stopEdit();render();
+}
+function queueSave(){
+ if(!signedIn||!teamId)return Promise.reject(new Error('ログインしていません'));
+ const snapshot=JSON.parse(JSON.stringify(data));savePending++;busy(true);syncState('クラウドに保存中…');
+ const job=saveChain.catch(()=>{}).then(async()=>{
+   const {data:newVersion,error}=await client.rpc('save_team_data',{p_team_id:teamId,p_expected_version:remoteVersion,p_data:snapshot});
+   if(error){
+     syncState('保存できませんでした。最新データを読み込みます。','error');
+     await readRemote().catch(()=>{});
+     notice('backupmessage','保存に失敗しました。別の保護者の更新と重なった可能性があります。変更内容を確認し、必要ならもう一度操作してください。');
+     throw error;
+   }
+   remoteVersion=newVersion;syncState('保存完了 '+new Date().toLocaleTimeString('ja-JP'),'success');
+ });
+ saveChain=job.finally(()=>{savePending--;if(!savePending)busy(false);});
+ saveChain.catch(e=>console.error('Shared save error',e));
+ return saveChain;
+}
+async function loadMembership(){
+ const {data:members,error}=await client.from('team_members').select('team_id,role').limit(1);
+ if(error)throw error;
+ if(!members?.length){
+   const {error:acceptError}=await client.rpc('accept_team_invitation');
+   if(acceptError)throw new Error('チームに参加できません。招待が登録されているか、メール認証が完了しているか確認してください。');
+   const retry=await client.from('team_members').select('team_id,role').limit(1);
+   if(retry.error||!retry.data?.length)throw new Error('チーム情報を取得できません');
+   return retry.data[0].team_id;
+ }
+ return members[0].team_id;
+}
+async function refreshInvitations(){
+ const {data:items,error}=await client.from('team_invitations').select('email').eq('team_id',teamId).order('email');
+ $('invitation-list').textContent=error?'招待一覧を取得できません':items?.length?'招待登録済み：'+items.map(i=>i.email).join('、'):'現在、未参加の招待はありません。';
+}
+async function showSignedIn(user){
+ signedIn=false;busy(true);syncState('チームに接続しています…');
+ try{
+  teamId=await loadMembership();await readRemote();signedIn=true;
+  $('login-area').classList.add('hidden');$('shared-toolbar').classList.remove('hidden');$('app-main').classList.remove('hidden');
+  $('current-user').textContent=user.email||'ログイン済み';
+  syncState('読み込み完了','success');busy(false);await refreshInvitations();
+  if(pollTimer)clearInterval(pollTimer);
+  pollTimer=setInterval(async()=>{
+   if(!signedIn||savePending||refreshBusy||editingHistoryId||document.visibilityState==='hidden')return;
+   refreshBusy=true;
+   try{
+    const {data:row,error}=await client.from('team_data').select('version').eq('team_id',teamId).single();
+    if(!error&&row.version!==remoteVersion){await readRemote();syncState('ほかの保護者の変更を反映しました','success');}
+   }catch(e){syncState('同期確認に失敗しました','error')}
+   finally{refreshBusy=false}
+  },10000);
+ }catch(e){
+  signedIn=false;teamId=null;busy(false);
+  $('app-main').classList.add('hidden');$('shared-toolbar').classList.add('hidden');$('login-area').classList.remove('hidden');
+  notice('login-message',e.message||'チームを開けませんでした');
+ }
+}
+async function initShared(){
+ if(SUPABASE_URL.startsWith('YOUR_')||SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_')){
+  notice('login-message','初期設定が必要です。SupabaseのProject URLとPublishable keyをHTMLに設定してください。','warn');return;
+ }
+ if(!window.supabase?.createClient){notice('login-message','認証ライブラリを読み込めません。インターネット接続を確認してください。');return;}
+ client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+ const {data:sessionInfo}=await client.auth.getSession();
+ if(sessionInfo?.session?.user)await showSignedIn(sessionInfo.session.user);
+}
+$('login-btn').onclick=async()=>{
+ if(!client)return;
+ $('login-btn').disabled=true;
+ try{
+  const {data:auth,error}=await client.auth.signInWithPassword({email:$('login-email').value.trim(),password:$('login-password').value});
+  if(error)throw error;
+  await showSignedIn(auth.user);
+ }catch(e){notice('login-message','ログインできません：'+e.message)}finally{$('login-btn').disabled=false}
+};
+$('signup-btn').onclick=async()=>{
+ if(!client)return;
+ const email=$('login-email').value.trim(),password=$('login-password').value;
+ if(!email||password.length<8){notice('login-message','メールアドレスと8文字以上のパスワードを入力してください');return;}
+ $('signup-btn').disabled=true;
+ try{
+  const {error}=await client.auth.signUp({email,password,emailRedirectTo:location.origin+location.pathname});
+  if(error)throw error;
+  notice('login-message','登録を受け付けました。確認メールが届いたらリンクを開き、ログインしてください。','success');
+ }catch(e){notice('login-message','登録できません：'+e.message)}finally{$('signup-btn').disabled=false}
+};
+$('logout-btn').onclick=async()=>{
+ if(savePending){alert('保存完了を待ってからログアウトしてください');return;}
+ if(pollTimer)clearInterval(pollTimer);signedIn=false;teamId=null;remoteVersion=null;data=emptyData();render();
+ await client.auth.signOut();$('app-main').classList.add('hidden');$('shared-toolbar').classList.add('hidden');$('login-area').classList.remove('hidden');
+};
+$('invite-btn').onclick=async()=>{
+ if(!signedIn)return;
+ $('invite-btn').disabled=true;
+ try{
+  const email=$('invite-email').value.trim();
+  const {error}=await client.rpc('invite_team_member',{p_team_id:teamId,p_email:email});
+  if(error)throw error;
+  notice('invite-message','招待を登録しました。共同編集版のURLを相手にお知らせください。','success');
+  $('invite-email').value='';await refreshInvitations();
+ }catch(e){notice('invite-message','招待を登録できません：'+e.message)}finally{$('invite-btn').disabled=false}
+};
+initShared();
+
+</script></body></html>
