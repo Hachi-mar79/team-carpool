@@ -26,7 +26,10 @@ main { padding-bottom: max(160px, env(safe-area-inset-bottom)) !important; }
 .history-item .actions{margin-top:8px}
 .history-details{white-space:pre-wrap;font-size:13px;line-height:1.6;background:#f5f8fc;padding:10px;border-radius:8px;margin-top:10px;overflow-wrap:anywhere}
 .history-date{font-weight:700}
-</style></head><body><header><h1>🚐 チーム配車管理</h1><p class="sub">保護者共同編集版 ｜ ログイン必須・オンライン保存</p></header><section id="login-area" class="card" style="max-width:540px;margin:22px auto;padding:20px"><h2>共同編集版にログイン</h2><p class="hint">チームに招待されたメールアドレスでログインしてください。最初の管理者はSupabaseで作成したアカウントを使用します。</p><label class="field">メールアドレス<input type="email" id="login-email" autocomplete="email"></label><label class="field" style="margin-top:10px">パスワード<input type="password" id="login-password" autocomplete="current-password"></label><div class="actions"><button class="btn" id="login-btn">ログイン</button><button class="btn secondary" id="signup-btn">新規アカウント登録</button></div><p class="hint">新規登録した方は確認メールのリンクを開いてからログインしてください。招待されていないアカウントではチームのデータは開けません。</p><div id="login-message" aria-live="polite"></div></section><div id="shared-toolbar" class="card hidden" style="max-width:920px;margin:12px auto"><div class="row"><div><b id="current-user"></b><div id="sync-state" class="muted">接続中</div></div><button class="btn secondary" id="logout-btn">ログアウト</button></div><h3>チームを選択</h3><div class="grid"><label class="field wide">表示するチーム<select id="team-select" aria-label="表示するチーム"></select></label><div class="field"><button class="btn secondary" id="refresh-teams" type="button">所属チームを更新</button></div></div><div id="team-message" aria-live="polite"></div><h3 style="margin-top:15px">新しいチームを作成</h3><div class="grid"><label class="field wide">新しいチーム名<input id="new-team-name" maxlength="80" placeholder="例：〇〇ミニバス"></label><div class="field"><button class="btn" id="create-team-btn" type="button">＋ チームを作成</button></div></div><div id="create-team-message" aria-live="polite"></div><h3 style="margin-top:18px">保護者を招待</h3><p class="hint">参加済みの保護者なら誰でも招待できます。招待メールは自動送信されません。登録後、共同編集版のURLをLINEなどで伝えてください。</p><div class="grid"><label class="field wide">招待するメールアドレス<input type="email" id="invite-email" placeholder="parent@example.com"></label><div class="field"><button class="btn" id="invite-btn">招待を登録</button></div></div><div id="invite-message"></div><div id="invitation-list" class="hint"></div></div><main id="app-main" class="hidden"><div class="tabs"><button class="active" data-tab="people">参加者</button><button data-tab="vehicles">車両</button><button data-tab="results">自動配車</button></div>
+
+/* Compact, accessible account and team controls */
+#shared-toolbar{padding:12px 15px!important}#shared-toolbar .row{padding:4px 0 9px}#shared-toolbar h3{margin-top:10px}.toolbar-details{border-top:1px solid #e4ebf2;margin-top:10px}.toolbar-details>summary{cursor:pointer;list-style-position:inside;padding:12px 2px;font-weight:700;font-size:14px;color:#16557d}.toolbar-details[open]>summary{border-bottom:1px solid #edf1f6}.toolbar-details .details-body{padding:12px 2px 4px}.toolbar-details .hint{margin:3px 0 10px}
+</style></head><body><header><h1>🚐 チーム配車管理</h1><p class="sub">保護者共同編集版 ｜ ログイン必須・オンライン保存</p></header><section id="login-area" class="card" style="max-width:540px;margin:22px auto;padding:20px"><h2>共同編集版にログイン</h2><p class="hint">チームに招待されたメールアドレスでログインしてください。最初の管理者はSupabaseで作成したアカウントを使用します。</p><label class="field">メールアドレス<input type="email" id="login-email" autocomplete="email"></label><label class="field" style="margin-top:10px">パスワード<input type="password" id="login-password" autocomplete="current-password"></label><div class="actions"><button class="btn" id="login-btn">ログイン</button><button class="btn secondary" id="signup-btn">新規アカウント登録</button></div><p class="hint">新規登録した方は確認メールのリンクを開いてからログインしてください。招待されていないアカウントではチームのデータは開けません。</p><div id="login-message" aria-live="polite"></div></section><div id="shared-toolbar" class="card hidden" style="max-width:920px;margin:12px auto"><div class="row"><div><b id="current-user"></b><div id="sync-state" class="muted">接続中</div></div><button class="btn secondary" id="logout-btn">ログアウト</button></div><h3>チームを選択</h3><div class="grid"><label class="field wide">表示するチーム<select id="team-select" aria-label="表示するチーム"></select></label><div class="field"><button class="btn secondary" id="refresh-teams" type="button">所属チームを更新</button></div></div><div id="team-message" aria-live="polite"></div><div id="archive-active-actions" class="hidden" style="margin-top:8px"><button class="btn secondary" id="archive-current-btn" type="button">このチームをアーカイブ</button><p class="hint">管理者のみ。参加者・車両・配車履歴は消えません。</p></div><div id="archived-team-section" class="hidden" style="margin-top:14px"><h3>アーカイブ済みのチーム</h3><div id="archived-team-list"></div></div><details class="toolbar-details"><summary>＋ 新しいチームを作成</summary><div class="details-body"><div class="grid"><label class="field wide">新しいチーム名<input id="new-team-name" maxlength="80" placeholder="例：〇〇ミニバス"></label><div class="field"><button class="btn" id="create-team-btn" type="button">＋ チームを作成</button></div></div><div id="create-team-message" aria-live="polite"></div></div></details><details class="toolbar-details"><summary>✉ 保護者を招待</summary><div class="details-body"><p class="hint">参加済みの保護者なら誰でも招待できます。招待メールは自動送信されません。登録後、共同編集版のURLをLINEなどで伝えてください。</p><div class="grid"><label class="field wide">招待するメールアドレス<input type="email" id="invite-email" placeholder="parent@example.com"></label><div class="field"><button class="btn" id="invite-btn">招待を登録</button></div></div><div id="invite-message"></div><div id="invitation-list" class="hint"></div></div></details></div><main id="app-main" class="hidden"><div class="tabs"><button class="active" data-tab="people">参加者</button><button data-tab="vehicles">車両</button><button data-tab="results">自動配車</button></div>
 <section class="panel active" id="people"><div class="card"><h2>参加者を登録 <span class="count" id="pcount">0 / 93名</span></h2><div id="editbanner" class="editbanner hidden">参加者を編集中です。変更を保存するかキャンセルしてください。</div><form id="pform" class="grid"><label class="field">氏名<input id="pname" required maxlength="50" placeholder="例：山田 太郎"></label><label class="field">区分<select id="ptype"><option>選手</option><option>保護者</option><option>弟妹</option></select></label><label class="field">学年（選手のみ）<select id="pgrade"><option value="">未選択</option><option>1年</option><option>2年</option><option>3年</option><option>4年</option><option>5年</option><option>6年</option></select></label><label class="field">家族ID<input id="pfamily" placeholder="例：Y01"></label><div class="field wide"><button class="btn" type="submit" id="psubmit">＋ 参加者を追加</button><button class="btn secondary hidden" type="button" id="pcancel" style="margin-top:6px">編集をキャンセル</button></div></form></div><div class="card"><h2>参加者一覧</h2><div id="plist"></div></div></section>
 <section class="panel" id="vehicles"><div class="card"><h2>車両を登録 <span class="count" id="vcount">0 / 20台</span></h2><form id="vform" class="grid"><label class="field">車名<input id="vname" required placeholder="例：山田号"></label><label class="field">号種<select id="vtype"><option>選手号</option><option>応援号</option></select></label><label class="field">運転者（参加者に登録済みの保護者）<select id="vdriver" required></select></label><label class="field">定員（運転者を含む）<input id="vcap" type="number" min="2" max="10" value="7" required></label><div class="field wide"><button class="btn" type="submit">＋ 車両を追加</button></div></form></div><div class="card"><h2>登録車両</h2><div id="vlist"></div></div></section>
 <section class="panel" id="results"><div class="card"><h2>自動配車</h2><p class="hint">使用台数をできるだけ少なくしたうえで、履歴上の使用回数が少ない車両を優先します。選手は選手号・弟妹は応援号・子供は後部座席に配置し、家族や同学年の同乗も優先します。定員・号種などの条件によっては使用回数の多い車両が選ばれます。</p><div class="actions"><button class="btn" id="assign">自動配車する</button><button class="btn secondary" id="again">別案を作成</button></div><div id="message"></div></div><div class="card"><h2>配車結果</h2><div id="carlist"><p class="muted">参加者と車両を登録して自動配車してください。</p></div><div class="grid" style="margin-top:14px"><label class="field">配車日<input type="date" id="eventdate"></label><label class="field">行事名（任意）<input id="eventname" maxlength="80" placeholder="例：練習試合"></label></div><div class="actions"><button class="btn" id="savehistory">配車を確定・履歴保存</button></div><div id="historymessage"></div><div class="actions"><button class="btn" id="share">配車結果を共有</button><button class="btn secondary" id="print">印刷・PDF保存</button></div><p class="hint">共有ボタンを押した場合のみ、配車結果の文章をLINEなど外部アプリに渡せます。共有先には個人情報が送られます。</p></div><div class="card"><h2>過去の配車履歴 <span class="count" id="historycount">0件</span></h2><p class="hint">保存した履歴から車両ごとの使用回数を集計します。履歴の削除で回数も減ります。</p><div id="historylist"></div></div><div id="history-editor-overlay" class="card hidden" style="border:2px solid #156aa7"><h2>配車履歴を編集</h2><p class="hint">日付・行事名・使用車両・乗車者を編集できます。座席には氏名を入力してください。保存するとチーム全体に反映されます。</p><div class="grid"><label class="field">配車日<input id="history-edit-date" type="date"></label><label class="field">行事名<input id="history-edit-name" maxlength="80"></label></div><div id="history-edit-cars"></div><div class="actions"><button class="btn secondary" type="button" id="history-add-car">＋ 車両を追加</button></div><div class="actions"><button class="btn" type="button" id="history-edit-save">変更を保存</button><button class="btn secondary" type="button" id="history-edit-cancel">キャンセル</button></div></div></section>
@@ -249,7 +252,7 @@ render();
 // 公開してよい値のみ設定。secret/service_roleキーは絶対に入力しない。
 const SUPABASE_URL = 'https://fcinbpvyjkffwipmrtvf.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_hCnfbMMsy8BCtVh-qH6qKQ_djshoUDu';
-let client=null, teamId=null, remoteVersion=null, signedIn=false, memberships=[];
+let client=null, teamId=null, remoteVersion=null, signedIn=false, memberships=[], archivedMemberships=[];
 let saveChain=Promise.resolve(), refreshBusy=false, pollTimer=null, savePending=0;
 const emptyData=()=>({people:[],vehicles:[],result:[],history:[]});
 const safeData=d=>({people:Array.isArray(d?.people)?d.people:[],vehicles:Array.isArray(d?.vehicles)?d.vehicles:[],result:Array.isArray(d?.result)?d.result:[],history:Array.isArray(d?.history)?d.history:[]});
@@ -278,25 +281,71 @@ function queueSave(){
  saveChain.catch(e=>console.error('Shared save error',e));
  return saveChain;
 }
-async function loadMemberships(tryAccept=false){
- if(tryAccept){
-  // 既存のメンバーにも、別チームからの新しい招待が届く場合がある。
-  // 未招待の場合のエラーは無視し、所属一覧を取得する。
-  await client.rpc('accept_team_invitation');
+function renderArchiveControls(){
+ const selected=memberships.find(m=>m.team_id===teamId);
+ $('archive-active-actions').classList.toggle('hidden',!(selected&&selected.role==='admin'));
+ const section=$('archived-team-section'), list=$('archived-team-list');
+ section.classList.toggle('hidden',!archivedMemberships.length);
+ list.innerHTML='';
+ for(const m of archivedMemberships){
+  const row=document.createElement('div');row.className='row';row.style.margin='8px 0';
+  const label=document.createElement('span');label.textContent=m.name+'（アーカイブ済み）';
+  const btn=document.createElement('button');btn.className='btn secondary';btn.type='button';btn.textContent='復元';
+  btn.onclick=()=>changeArchive(m.team_id,false,m.name,btn);
+  row.append(label,btn);list.append(row);
  }
+}
+async function loadMemberships(tryAccept=false){
+ if(tryAccept)await client.rpc('accept_team_invitation');
  const {data:members,error}=await client.from('team_members').select('team_id,role').order('team_id');
  if(error)throw error;
  const ids=(members||[]).map(m=>m.team_id);
  let names=new Map();
  if(ids.length){
-  const {data:teams,error:teamError}=await client.from('teams').select('id,name').in('id',ids);
+  const {data:teams,error:teamError}=await client.from('teams').select('id,name,archived_at').in('id',ids);
   if(teamError)throw teamError;
-  names=new Map((teams||[]).map(t=>[t.id,t.name]));
+  names=new Map((teams||[]).map(t=>[t.id,t]));
  }
- memberships=(members||[]).map(m=>({...m,name:names.get(m.team_id)||'チーム名未取得'}));
+ const all=(members||[]).map(m=>({...m,name:names.get(m.team_id)?.name||'チーム名未取得',archived_at:names.get(m.team_id)?.archived_at||null}));
+ memberships=all.filter(m=>!m.archived_at);
+ archivedMemberships=all.filter(m=>m.archived_at&&m.role==='admin');
  $('team-select').innerHTML=memberships.map(m=>`<option value="${escapeHTML(m.team_id)}">${escapeHTML(m.name)}（${m.role==='admin'?'管理者':'メンバー'}）</option>`).join('');
+ renderArchiveControls();
  return memberships;
 }
+async function changeArchive(id,archive,name,button){
+ if(savePending)return notice('team-message','保存完了を待ってください');
+ const message=archive
+  ? `「${name}」をアーカイブしますか？\n参加者・車両・配車履歴は残り、後から復元できます。\n所属メンバーの通常のチーム一覧から非表示になります。`
+  : `「${name}」を復元しますか？`;
+ if(!confirm(message))return;
+ if(archive){
+  const typed=prompt('誤操作防止のため、アーカイブするチーム名を正確に入力してください：\n'+name);
+  if(typed===null)return;
+  if(typed!==name)return notice('team-message','チーム名が一致しないため中止しました。','warn');
+ }
+ button.disabled=true;
+ try{
+  const {error}=await client.rpc('set_team_archived',{p_team_id:id,p_archived:archive});
+  if(error)throw error;
+  if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
+  teamId=null;remoteVersion=null;data=emptyData();render();
+  await loadMemberships();
+  if(memberships.length){
+   await selectTeam(memberships[0].team_id);
+   $('app-main').classList.remove('hidden');
+  }else{
+   $('app-main').classList.add('hidden');syncState('チーム未選択');
+  }
+  renderArchiveControls();
+  notice('team-message',archive?'チームをアーカイブしました。アーカイブ済み一覧から復元できます。':'チームを復元しました。','success');
+ }catch(e){notice('team-message','操作できません：'+e.message)}
+ finally{button.disabled=false}
+}
+$('archive-current-btn').onclick=()=>{
+ const m=memberships.find(x=>x.team_id===teamId);
+ if(m&&m.role==='admin')changeArchive(m.team_id,true,m.name,$('archive-current-btn'));
+};
 async function selectTeam(nextId){
  if(savePending)throw new Error('クラウドへの保存完了を待ってください');
  if(!memberships.some(m=>m.team_id===nextId))throw new Error('所属していないチームです');
@@ -305,7 +354,7 @@ async function selectTeam(nextId){
  try{
   teamId=nextId;remoteVersion=null;data=emptyData();
   await readRemote();
-  $('team-select').value=nextId;
+  $('team-select').value=nextId;renderArchiveControls();
   $('invite-email').value='';$('invite-message').textContent='';
   $('invitation-list').textContent='';
   await refreshInvitations();
@@ -338,7 +387,7 @@ async function showSignedIn(user){
    await selectTeam(memberships[0].team_id);
    notice('team-message','表示中のチームを切り替えられます。','success');
   }else{
-   teamId=null;data=emptyData();render();
+   teamId=null;data=emptyData();render();renderArchiveControls();
    notice('team-message','所属チームがありません。新しいチームを作成するか、招待された場合は「所属チームを更新」を押してください。','warn');
    syncState('チーム未選択');
   }
@@ -360,7 +409,7 @@ $('refresh-teams').onclick=async()=>{
  try{
   const previous=teamId;
   await loadMemberships(true);
-  if(!memberships.length){$('app-main').classList.add('hidden');notice('team-message','所属チームがありません。新しいチームを作成してください。','warn');return;}
+  if(!memberships.length){teamId=null;data=emptyData();render();renderArchiveControls();$('app-main').classList.add('hidden');notice('team-message','所属チームがありません。新しいチームを作成してください。','warn');return;}
   await selectTeam(memberships.some(m=>m.team_id===previous)?previous:memberships[0].team_id);
   $('app-main').classList.remove('hidden');
   notice('team-message','所属チームを更新しました。','success');
@@ -416,7 +465,7 @@ $('signup-btn').onclick=async()=>{
 };
 $('logout-btn').onclick=async()=>{
  if(savePending){alert('保存完了を待ってからログアウトしてください');return;}
- if(pollTimer)clearInterval(pollTimer);pollTimer=null;signedIn=false;teamId=null;remoteVersion=null;memberships=[];data=emptyData();render();
+ if(pollTimer)clearInterval(pollTimer);pollTimer=null;signedIn=false;teamId=null;remoteVersion=null;memberships=[];archivedMemberships=[];data=emptyData();render();
  await client.auth.signOut();$('app-main').classList.add('hidden');$('shared-toolbar').classList.add('hidden');$('login-area').classList.remove('hidden');
 };
 $('invite-btn').onclick=async()=>{
