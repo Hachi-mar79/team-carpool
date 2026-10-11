@@ -247,7 +247,7 @@ render();
 
 // ===== Supabase共同編集版 =====
 // 公開してよい値のみ設定。secret/service_roleキーは絶対に入力しない。
-const SUPABASE_URL = 'https://fcinbpvyjkffwipmrtvf.supabase.co/rest/v1/';
+const SUPABASE_URL = 'https://fcinbpvyjkffwipmrtvf.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_hCnfbMMsy8BCtVh-qH6qKQ_djshoUDu';
 let client=null, teamId=null, remoteVersion=null, signedIn=false;
 let saveChain=Promise.resolve(), refreshBusy=false, pollTimer=null, savePending=0;
