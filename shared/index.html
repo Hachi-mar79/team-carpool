@@ -479,7 +479,7 @@ $('invite-btn').onclick=async()=>{
   const teamName=selected?.name||'チーム';
   const appUrl='https://hachi-mar79.github.io/team-carpool/shared/';
   const subject=`【TeamCarpool】${teamName}へのご招待`;
-  const body=`${teamName}の配車管理アプリ「TeamCarpool」へのご招待です。\n\n【アプリURL】\n${appUrl}\n\n【参加方法】\n1. 上記URLを開きます。\n2. 初めて利用する場合は「新規アカウント登録」から、このメールを受け取ったアドレスで登録してください。\n3. 届いた確認メールのリンクを開き、ログインしてください。\n4. 招待されたチームが表示されない場合は「所属チームを更新」を押してください。\n\nすでにアカウントをお持ちの場合は、同じメールアドレスでログインしてください。\n\n※このメールはチームの保護者が作成した招待案内です。`;
+  const body=`${teamName}の配車管理アプリ「TeamCarpool」へのご招待です。\n\n【アプリURL】\n${appUrl}\n\n【参加方法】\n1. 上記URLを開きます。\n2. 初めて利用する場合は「新規アカウント登録」から、このメールを受け取ったアドレスで登録してください。パスワードはご自身で新しく考えた8文字以上のものを設定してください。\n3. 届いた確認メールのリンクを開き、ログインしてください。\n4. 招待されたチームが表示されない場合は「所属チームを更新」を押してください。\n\nすでにアカウントをお持ちの場合は、同じメールアドレスでログインしてください。\n\n※このメールはチームの保護者が作成した招待案内です。`;
   const mailto=`mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   $('invite-email').value='';await refreshInvitations();
   notice('invite-message','招待を登録しました。メールアプリが開いたら内容を確認して送信してください。開かない場合は、以下の「メールをもう一度開く」を押してください。','success');
