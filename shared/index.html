@@ -410,7 +410,7 @@ function refreshCopyTeamOptions(){
 $('new-team-mode').onchange=refreshCopyTeamOptions;
 $('rename-team-btn').onclick=async()=>{
  const current=memberships.find(m=>m.team_id===teamId);
- if(!current||current.role!=='admin')return;
+ if(!current)return;
  if(savePending)return notice('team-message','保存完了を待ってください');
  const value=prompt('新しいチーム名を入力してください（1〜80文字）',current.name);
  if(value===null)return;
@@ -430,7 +430,7 @@ $('rename-team-btn').onclick=async()=>{
 };
 function renderArchiveControls(){
  const selected=memberships.find(m=>m.team_id===teamId);
- $('archive-active-actions').classList.toggle('hidden',!(selected&&selected.role==='admin'));
+ $('archive-active-actions').classList.toggle('hidden',!selected);
  const section=$('archived-team-section'), list=$('archived-team-list');
  section.classList.toggle('hidden',!archivedMemberships.length);
  list.innerHTML='';
@@ -439,7 +439,9 @@ function renderArchiveControls(){
   const label=document.createElement('span');label.textContent=m.name+'（アーカイブ済み）';
   const btn=document.createElement('button');btn.className='btn secondary';btn.type='button';btn.textContent='復元';
   btn.onclick=()=>changeArchive(m.team_id,false,m.name,btn);
-  row.append(label,btn);list.append(row);
+  const del=document.createElement('button');del.className='btn danger';del.type='button';del.textContent='完全削除';
+  del.onclick=()=>deleteArchivedTeam(m.team_id,m.name,del);
+  row.append(label,btn,del);list.append(row);
  }
 }
 async function loadMemberships(tryAccept=false){
@@ -455,7 +457,7 @@ async function loadMemberships(tryAccept=false){
  }
  const all=(members||[]).map(m=>({...m,name:names.get(m.team_id)?.name||'チーム名未取得',archived_at:names.get(m.team_id)?.archived_at||null}));
  memberships=all.filter(m=>!m.archived_at);
- archivedMemberships=all.filter(m=>m.archived_at&&m.role==='admin');
+ archivedMemberships=all.filter(m=>m.archived_at);
  $('team-select').innerHTML=memberships.map(m=>`<option value="${escapeHTML(m.team_id)}">${escapeHTML(m.name)}（${m.role==='admin'?'管理者':'メンバー'}）</option>`).join('');
  refreshCopyTeamOptions();
  renderArchiveControls();
@@ -490,9 +492,25 @@ async function changeArchive(id,archive,name,button){
  }catch(e){notice('team-message','操作できません：'+e.message)}
  finally{button.disabled=false}
 }
+async function deleteArchivedTeam(id,name,button){
+ if(savePending)return notice('team-message','保存完了を待ってください');
+ if(!archivedMemberships.some(m=>m.team_id===id))return notice('team-message','アーカイブ済みチームを選択してください');
+ if(!confirm(`「${name}」を完全に削除しますか？\n参加者・車両・配車履歴・メンバー・招待情報はすべて失われ、復元できません。`))return;
+ const typed=prompt(`【完全削除・取り消し不可】\n「${name}」を削除するには、チーム名を正確に入力してください：`);
+ if(typed===null)return;
+ if(typed!==name)return notice('team-message','チーム名が一致しないため削除を中止しました。','warn');
+ button.disabled=true;
+ try{
+  const {error}=await client.rpc('delete_archived_team',{p_team_id:id,p_confirm_name:typed});
+  if(error)throw error;
+  await loadMemberships();
+  notice('team-message',`「${name}」を完全に削除しました。この操作は取り消せません。`,'success');
+ }catch(e){notice('team-message','削除できません：'+e.message)}
+ finally{button.disabled=false}
+}
 $('archive-current-btn').onclick=()=>{
  const m=memberships.find(x=>x.team_id===teamId);
- if(m&&m.role==='admin')changeArchive(m.team_id,true,m.name,$('archive-current-btn'));
+ if(m)changeArchive(m.team_id,true,m.name,$('archive-current-btn'));
 };
 async function selectTeam(nextId){
  if(savePending)throw new Error('クラウドへの保存完了を待ってください');
