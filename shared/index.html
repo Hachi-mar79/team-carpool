@@ -427,7 +427,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_hCnfbMMsy8BCtVh-qH6qKQ_djshoUDu
 let client=null, teamId=null, remoteVersion=null, signedIn=false, memberships=[], archivedMemberships=[];
 let saveChain=Promise.resolve(), refreshBusy=false, pollTimer=null, savePending=0;
 const emptyData=()=>({people:[],vehicles:[],result:[],history:[],event:{date:'',name:'',memo:''}});
-const safeData=d=>({people:Array.isArray(d?.people)?d.people:[],vehicles:Array.isArray(d?.vehicles)?d.vehicles:[],result:Array.isArray(d?.result)?d.result:[],history:Array.isArray(d?.history)?d.history:[],event:{date:typeof d?.event?.date==='string'?d.event.date:'',name:typeof d?.event?.name==='string'?d.event.name:'',memo:typeof d?.event?.memo==='string'?d.event.memo:''}});
+const safeData=d=>({people:Array.isArray(d?.people)?d.people:[],vehicles:Array.isArray(d?.vehicles)?d.vehicles:[],result:Array.isArray(d?.result)?d.result:[],history:Array.isArray(d?.history)?d.history:[],event:{date:typeof d?.event?.date==='string'?d.event.date:'',name:typeof d?.event?.name==='string'?d.event.name:'',memo:typeof d?.event?.memo==='string'?d.event.memo:'',completed:d?.event?.completed===true}});
 const notice=(id,message,kind='error')=>$(id).innerHTML='<div class="'+kind+'">'+escapeHTML(message)+'</div>';
 function syncState(s,kind=''){ $('sync-state').textContent=s; $('sync-state').style.color=kind==='error'?'#a12020':kind==='success'?'#166e48':'#62788d'; }
 function busy(flag){ $('app-main').style.pointerEvents=flag?'none':'auto'; $('app-main').style.opacity=flag?'.65':'1'; }
